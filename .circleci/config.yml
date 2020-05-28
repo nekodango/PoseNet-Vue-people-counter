@@ -6,7 +6,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-        at: docs/_build
+          at: docs/_build
       - run:
           name: Install and configure dependencies
           command: |

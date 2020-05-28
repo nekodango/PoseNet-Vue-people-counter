@@ -1,5 +1,6 @@
 # PoseNet people counter
-People counter running on a web browser using PoseNet, Vue, Vuetify.
+## Overview
+People counter running on a web browser using [PoseNet](https://github.com/tensorflow/tfjs-models/tree/master/posenet), [Vue.js](https://vuejs.org/), [Vuetify](https://vuetifyjs.com/).
 ![demo](demos/sample1.gif)
 
 Code for the most part is directly from [PoseNet official demos](https://github.com/tensorflow/tfjs-models/tree/master/posenet/demos) and [xunxdd/Posenet-Demo--In-My-Feelings-Challenge-AI](https://github.com/xunxdd/Posenet-Demo--In-My-Feelings-Challenge-AI).

@@ -1,5 +1,16 @@
 # PoseNet people counter
+People counter running on a web browser using PoseNet, Vue, Vuetify.
+![demo](demos/sample1.gif)
 
+Code for the most part is directly from [PoseNet official demos](https://github.com/tensorflow/tfjs-models/tree/master/posenet/demos) and [xunxdd/Posenet-Demo--In-My-Feelings-Challenge-AI](https://github.com/xunxdd/Posenet-Demo--In-My-Feelings-Challenge-AI).
+
+## Live demo
+Try it on your device now!
+https://nekodango.github.io/PoseNet-Vue-people-counter/
+
+## Configure detect line
+Detect line width and position can be changed interactively.
+![demo](demos/sample2.gif)
 
 ## Project setup
 ```

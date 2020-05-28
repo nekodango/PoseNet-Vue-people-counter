@@ -353,12 +353,7 @@
                             if(intersect(a1, a2, b1, b2)) {
                                 let left_right_line_color = 'aqua'
                                 if(min_d2(center_x, center_y, vm.p1.x, vm.p1.y, vm.p2.x, vm.p2.y) <= vm.thresh) {
-
-
-                                    if(new Date().getTime() - vm.prev_detected.on >= 300
-                                    // Math.abs(vm.prev_detected.y - center_y) > 2
-                                    //     Math.sqrt(Math.pow(vm.prev_detected.x - center_x, 2) + Math.pow(vm.prev_detected.y - center_y, 2)) > 2
-                                    ) {
+                                    if(new Date().getTime() - vm.prev_detected.on >= 300) {
                                         line_color = 'yellow'
                                         vm.people_count++;
                                         vm.prev_detected = {x: center_x, y: center_y, on: new Date().getTime()}

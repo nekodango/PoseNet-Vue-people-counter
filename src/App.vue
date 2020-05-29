@@ -2,7 +2,7 @@
   <v-app>
     <v-app-bar
       app
-      color="primary"
+      color="red"
       dark
     ><div class="d-flex align-center">
         PoseNet people counter

@@ -1,5 +1,7 @@
 # PoseNet people counter
 
+![github pages](https://github.com/nekodango/PoseNet-Vue-people-counter/workflows/github%20pages/badge.svg)
+
 ## Overview
 People counter running on a web browser using [PoseNet](https://github.com/tensorflow/tfjs-models/tree/master/posenet), [Vue.js](https://vuejs.org/), [Vuetify](https://vuetifyjs.com/).
 ![demo](demos/sample1.gif)

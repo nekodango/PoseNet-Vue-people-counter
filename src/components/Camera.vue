@@ -37,6 +37,29 @@
                     <v-card>
                         <v-expansion-panels>
                             <v-expansion-panel>
+                                <v-expansion-panel-header>Max Pose Detections</v-expansion-panel-header>
+                                <v-expansion-panel-content>
+                                    <v-slider
+                                            v-model="maxPoseDetections"
+                                            min="0"
+                                            max="50"
+                                            label="Max Pose Detections"
+                                    >
+                                        <template v-slot:append>
+                                            <v-text-field
+                                                    v-model="maxPoseDetections"
+                                                    suffix="px"
+                                                    class="mt-0 pt-0"
+                                                    hide-details
+                                                    single-line
+                                                    type="number"
+                                                    style="width: 60px"
+                                            ></v-text-field>
+                                        </template>
+                                    </v-slider>
+                                </v-expansion-panel-content>
+                            </v-expansion-panel>
+                            <v-expansion-panel>
                                 <v-expansion-panel-header>Detect line width</v-expansion-panel-header>
                                 <v-expansion-panel-content>
                                     <v-slider
@@ -172,7 +195,7 @@
             minPartConfidence: 0.5,
         },
         multiPoseDetection: {
-            maxPoseDetections: 5,
+
             minPoseConfidence: 0.15,
             minPartConfidence: 0.1,
             nmsRadius: 30.0,
@@ -193,7 +216,8 @@
             p2: {"x": 400, "y": 600},
             thresh: 10,
             last_reset: '',
-            prev_detected: {"x": -1, 'y': -1, 'on': null}
+            prev_detected: {"x": -1, 'y': -1, 'on': null},
+            maxPoseDetections: 10,
         }),
         mounted() {
             this.onMounted();
@@ -220,6 +244,8 @@
 
                 canvas.width = videoWidth;
                 canvas.height = videoHeight;
+                // canvas.width = '100%';
+                // canvas.height = '100%';
 
                 async function poseDetectionFrame() {
                     if (guiState.changeToArchitecture) {
@@ -228,8 +254,8 @@
 
                         // Load the PoseNet model weights for either the 0.50, 0.75, 1.00, or 1.01
                         // version
-                        guiState.net = await posenet.load(+guiState.changeToArchitecture);
-
+                        // guiState.net = await posenet.load(+guiState.changeToArchitecture);
+                        guiState.net = await posenet.load({architecture: 'ResNet50'})
                         guiState.changeToArchitecture = null;
                     }
 
@@ -269,7 +295,7 @@
                                 video, {
                                     flipHorizontal: flipHorizontal,
                                     decodingMethod: 'multi-person',
-                                    maxDetections: guiState.multiPoseDetection.maxPoseDetections,
+                                    maxDetections: vm.maxPoseDetections,
                                     scoreThreshold: guiState.multiPoseDetection.minPartConfidence,
                                     nmsRadius:guiState.multiPoseDetection.nmsRadius
                                 });

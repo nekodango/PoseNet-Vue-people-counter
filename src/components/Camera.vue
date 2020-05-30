@@ -35,7 +35,14 @@
                     </v-card>
 
                     <v-card>
-                        <v-expansion-panels>
+                        <v-expansion-panels v-model="panel">
+                            <v-expansion-panel>
+                                <v-expansion-panel-header>Detection Keypoints</v-expansion-panel-header>
+                                <v-expansion-panel-content>
+                                    <v-select v-model="selected_keypoints.k1" :items="keypoints" label="#1" return-object></v-select>
+                                    <v-select v-model="selected_keypoints.k2" :items="keypoints" label="#2" return-object></v-select>
+                                </v-expansion-panel-content>
+                            </v-expansion-panel>
                             <v-expansion-panel>
                                 <v-expansion-panel-header>Max Pose Detections</v-expansion-panel-header>
                                 <v-expansion-panel-content>
@@ -218,11 +225,21 @@
             last_reset: '',
             prev_detected: {"x": -1, 'y': -1, 'on': null},
             maxPoseDetections: 10,
+            panel: [],
+            keypoints: ['nose', 'leftEye', 'rightEye', 'leftEar', 'rightEar',
+                        'leftShoulder', 'rightShoulder', 'leftElbow', 'rightElbow',
+                        'leftWrist', 'rightWrist', 'leftHip', 'rightHip', 'leftKnee',
+                        'rightKnee', 'leftAnkle', 'rightAnkle'],
+            selected_keypoints: {'k1': 'leftShoulder', 'k2': 'rightShoulder'}
         }),
+        computed: {
+            is_editing_detectline: function () {
+                return this.panel === 3 ? true : false
+            }
+        },
         mounted() {
             this.onMounted();
         },
-
         methods: {
             clear_count: function() {
                 this.last_reset = new Date().toLocaleString();
@@ -332,8 +349,8 @@
                             }
 
                             // const nose = keypoints.filter(elem => elem.part === 'nose')[0]
-                            const left = keypoints.filter(elem => elem.part === 'leftShoulder')[0]
-                            const right = keypoints.filter(elem => elem.part === 'rightShoulder')[0]
+                            const left = keypoints.filter(elem => elem.part === vm.selected_keypoints.k1)[0]
+                            const right = keypoints.filter(elem => elem.part === vm.selected_keypoints.k2)[0]
                             // const target = keypoints.filter(elem => elem.part === 'leftShoulder')[0]
 
 
@@ -408,10 +425,13 @@
                     ctx.strokeStyle = line_color;
                     ctx.stroke();
 
-                    ctx.font = "bold 20px sans-serif";
-                    ctx.fillStyle = line_color;
-                    ctx.fillText("p1", vm.p1.x + vm.thresh + 5, vm.p1.y + 20);
-                    ctx.fillText("p2", vm.p2.x + vm.thresh + 5, vm.p2.y - 15);
+                    if(vm.is_editing_detectline) {
+                        ctx.font = "bold 20px sans-serif";
+                        ctx.fillStyle = line_color;
+                        ctx.fillText("p1", vm.p1.x + vm.thresh + 5, vm.p1.y + 20);
+                        ctx.fillText("p2", vm.p2.x + vm.thresh + 5, vm.p2.y - 15);
+                    }
+
 
 
                     // End monitoring code for frames per second

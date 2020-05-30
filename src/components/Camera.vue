@@ -55,7 +55,6 @@
                                         <template v-slot:append>
                                             <v-text-field
                                                     v-model="maxPoseDetections"
-                                                    suffix="px"
                                                     class="mt-0 pt-0"
                                                     hide-details
                                                     single-line
@@ -219,8 +218,8 @@
         data: () => ({
             is_rear_camera: true,
             people_count: 0,
-            p1: {"x": 400, "y": 0},
-            p2: {"x": 400, "y": 600},
+            p1: {"x": 0, "y": 300},
+            p2: {"x": 800, "y": 300},
             thresh: 10,
             last_reset: '',
             prev_detected: {"x": -1, 'y': -1, 'on': null},
@@ -230,7 +229,7 @@
                         'leftShoulder', 'rightShoulder', 'leftElbow', 'rightElbow',
                         'leftWrist', 'rightWrist', 'leftHip', 'rightHip', 'leftKnee',
                         'rightKnee', 'leftAnkle', 'rightAnkle'],
-            selected_keypoints: {'k1': 'leftShoulder', 'k2': 'rightShoulder'}
+            selected_keypoints: {'k1': 'leftShoulder', 'k2': 'rightAnkle'}
         }),
         computed: {
             is_editing_detectline: function () {
@@ -387,9 +386,16 @@
                             const center_x = (b1.x + b2.x) / 2
                             const center_y = (b1.y + b2.y) / 2
 
+                            // Draw line between target keypoints
+                            ctx.beginPath();
+                            ctx.moveTo(b1.x, b1.y);
+                            ctx.lineTo(b2.x, b2.y);
+                            ctx.lineWidth = 4;
+                            ctx.strokeStyle = 'green';
+                            ctx.stroke();
                             ctx.beginPath();
                             ctx.arc(center_x, center_y, 2, 0, 2 * Math.PI);
-                            ctx.fillStyle = 'green';
+                            ctx.fillStyle = 'yellow';
                             ctx.fill();
 
 
@@ -410,7 +416,7 @@
                                 ctx.beginPath();
                                 ctx.moveTo(b1.x, b1.y);
                                 ctx.lineTo(b2.x, b2.y);
-                                ctx.lineWidth = 4;
+                                ctx.lineWidth = 6;
                                 ctx.strokeStyle = left_right_line_color;
                                 ctx.stroke();
                             }

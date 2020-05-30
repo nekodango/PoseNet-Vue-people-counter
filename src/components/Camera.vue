@@ -2,7 +2,7 @@
     <div>
         <v-container fluid>
             <v-row dense>
-                <v-col>
+                <v-col cols="8">
                     <div id="info" style='display:none'>
                     </div>
                     <div id="loading">
@@ -16,7 +16,7 @@
                     </div>
 
                 </v-col>
-                <v-col>
+                <v-col cols="4">
                     <v-card
                             class="mx-auto"
                             outlined
@@ -36,6 +36,18 @@
 
                     <v-card>
                         <v-expansion-panels v-model="panel">
+                            <v-expansion-panel>
+                                <v-expansion-panel-header>Camera</v-expansion-panel-header>
+                                <v-expansion-panel-content>
+                                    <v-select v-model="selected_camera"
+                                              :items="cameras"
+                                              item-text="label"
+                                              item-value="deviceId"
+                                              label="camera"
+                                              @change="changeCamera"
+                                              return-object></v-select>
+                                </v-expansion-panel-content>
+                            </v-expansion-panel>
                             <v-expansion-panel>
                                 <v-expansion-panel-header>Detection Keypoints</v-expansion-panel-header>
                                 <v-expansion-panel-content>
@@ -229,17 +241,43 @@
                         'leftShoulder', 'rightShoulder', 'leftElbow', 'rightElbow',
                         'leftWrist', 'rightWrist', 'leftHip', 'rightHip', 'leftKnee',
                         'rightKnee', 'leftAnkle', 'rightAnkle'],
-            selected_keypoints: {'k1': 'leftShoulder', 'k2': 'rightAnkle'}
+            selected_keypoints: {'k1': 'leftShoulder', 'k2': 'rightAnkle'},
+            cameras: [],
+            selected_camera: null,
+            video: null,
         }),
         computed: {
             is_editing_detectline: function () {
-                return this.panel === 3 ? true : false
+                return this.panel === 4 ? true : false
             }
         },
         mounted() {
             this.onMounted();
         },
         methods: {
+            changeCamera: async function() {
+                // Load the PoseNet model weights
+                const net = await posenet.load();
+
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('main').style.display = 'block';
+
+                // let video;
+
+                try {
+                    this.video = await this.loadVideo(this.selected_camera.deviceId);
+                } catch (e) {
+                    let info = document.getElementById('info');
+                    info.textContent = 'this browser does not support video capture,' +
+                        'or this device does not have a camera';
+                    info.style.display = 'block';
+                    throw e;
+                }
+                this.setupGui([], net);
+                this.prev_detected.on = new Date().getTime()
+                this.last_reset = new Date().toLocaleString();
+                this.detectPoseInRealTime(this.video, net);
+            },
             clear_count: function() {
                 this.last_reset = new Date().toLocaleString();
                 this.people_count = 0
@@ -449,7 +487,7 @@
                 poseDetectionFrame();
             },
 
-            async setupCamera() {
+            async setupCamera(deviceId) {
                 if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
                     throw new Error(
                         'Browser API navigator.mediaDevices.getUserMedia not available');
@@ -470,6 +508,7 @@
                 const stream = await navigator.mediaDevices.getUserMedia({
                     'audio': false,
                     'video': {
+                        deviceId: deviceId,
                         facingMode: facing_mode,
                         width: mobile ? undefined : videoWidth,
                         height: mobile ? undefined : videoHeight,
@@ -485,8 +524,8 @@
                 });
             },
 
-            async loadVideo() {
-                const video = await this.setupCamera();
+            async loadVideo(deviceId) {
+                const video = await this.setupCamera(deviceId);
                 video.play();
 
                 return video;
@@ -511,16 +550,38 @@
             },
 
             async onMounted() {
+                const vm = this
+                let i = 0
+                navigator.mediaDevices.enumerateDevices()
+                    .then(function(devices) { // 成功時
+                        devices.forEach(function(device) {
+                            if(device.kind === "videoinput") {
+                                const info = {
+                                    'deviceId': device.deviceId,
+                                    'label': device.label,
+                                }
+                                vm.cameras.push(info)
+                                if(i === 0) {
+                                    vm.selected_camera = info
+                                }
+                                i++
+                            }
+                        });
+                    })
+                    .catch(function(err) { // エラー発生時
+                        console.error('enumerateDevide ERROR:', err);
+                    });
+
                 // Load the PoseNet model weights
                 const net = await posenet.load();
 
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('main').style.display = 'block';
 
-                let video;
+                // let video;
 
                 try {
-                    video = await this.loadVideo();
+                    vm.video = await this.loadVideo(vm.selected_camera.deviceId);
                 } catch (e) {
                     let info = document.getElementById('info');
                     info.textContent = 'this browser does not support video capture,' +
@@ -531,7 +592,7 @@
                 this.setupGui([], net);
                 this.prev_detected.on = new Date().getTime()
                 this.last_reset = new Date().toLocaleString();
-                this.detectPoseInRealTime(video, net);
+                this.detectPoseInRealTime(vm.video, net);
 
             },
 

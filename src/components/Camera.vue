@@ -271,7 +271,7 @@
                         // Load the PoseNet model weights for either the 0.50, 0.75, 1.00, or 1.01
                         // version
                         // guiState.net = await posenet.load(+guiState.changeToArchitecture);
-                        guiState.net = await posenet.load({architecture: 'ResNet50'})
+                        guiState.net = await posenet.load()
                         guiState.changeToArchitecture = null;
                     }
 

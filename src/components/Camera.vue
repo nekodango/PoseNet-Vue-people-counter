@@ -44,7 +44,7 @@
                                               item-text="label"
                                               item-value="deviceId"
                                               label="camera"
-                                              @change="changeCamera"
+                                              @change="startCount"
                                               return-object></v-select>
                                 </v-expansion-panel-content>
                             </v-expansion-panel>
@@ -255,14 +255,12 @@
             this.onMounted();
         },
         methods: {
-            changeCamera: async function() {
+            startCount: async function() {
                 // Load the PoseNet model weights
                 const net = await posenet.load();
 
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById('main').style.display = 'block';
-
-                // let video;
 
                 try {
                     this.video = await this.loadVideo(this.selected_camera.deviceId);
@@ -274,8 +272,6 @@
                     throw e;
                 }
                 this.setupGui([], net);
-                this.prev_detected.on = new Date().getTime()
-                this.last_reset = new Date().toLocaleString();
                 this.detectPoseInRealTime(this.video, net);
             },
             clear_count: function() {
@@ -309,7 +305,8 @@
                         // Load the PoseNet model weights for either the 0.50, 0.75, 1.00, or 1.01
                         // version
                         // guiState.net = await posenet.load(+guiState.changeToArchitecture);
-                        guiState.net = await posenet.load({architecture: 'ResNet50'})
+                        // guiState.net = await posenet.load({architecture: 'ResNet50'})
+                        guiState.net = await posenet.load({architecture: 'MobileNetV1'})
                         guiState.changeToArchitecture = null;
                     }
 
@@ -497,19 +494,19 @@
                 video.width = videoWidth;
                 video.height = videoHeight;
 
-                let facing_mode
+                // let facing_mode
                 const mobile = this.isMobile();
-                if (mobile) {
-                    facing_mode = { exact: "environment" }
-                } else {
-                    facing_mode = 'user'
-                }
+                // if (mobile) {
+                //     facing_mode = { exact: "environment" }
+                // } else {
+                //     facing_mode = 'user'
+                // }
 
                 const stream = await navigator.mediaDevices.getUserMedia({
                     'audio': false,
                     'video': {
                         deviceId: deviceId,
-                        facingMode: facing_mode,
+                        // facingMode: facing_mode,
                         width: mobile ? undefined : videoWidth,
                         height: mobile ? undefined : videoHeight,
 
@@ -572,6 +569,11 @@
                         console.error('enumerateDevide ERROR:', err);
                     });
 
+                this.prev_detected.on = new Date().getTime()
+                this.last_reset = new Date().toLocaleString();
+
+                // this.startCount()
+
                 // Load the PoseNet model weights
                 const net = await posenet.load();
 
@@ -590,8 +592,7 @@
                     throw e;
                 }
                 this.setupGui([], net);
-                this.prev_detected.on = new Date().getTime()
-                this.last_reset = new Date().toLocaleString();
+
                 this.detectPoseInRealTime(vm.video, net);
 
             },

@@ -1,7 +1,7 @@
 <template>
     <div>
         <v-container fluid>
-            <v-row dense>
+            <v-row>
                 <v-col cols="8">
                     <div id="info" style='display:none'>
                     </div>
@@ -12,7 +12,7 @@
                     <div id='main' style='display:none'>
                         <video id="video" playsinline style="display: none;">
                         </video>
-                        <canvas id="output" />
+                        <canvas id="output"/>
                     </div>
 
                 </v-col>
@@ -60,7 +60,7 @@
                                 <v-expansion-panel-content>
                                     <v-slider
                                             v-model="maxPoseDetections"
-                                            min="0"
+                                            min="1"
                                             max="50"
                                             label="Max Pose Detections"
                                     >
@@ -198,8 +198,7 @@
     import Stats from 'stats.js';
     import Util from '@/services/utils';
 
-    const videoWidth = 800;
-    const videoHeight = 600;
+
     const stats = new Stats();
     const guiState = {
         algorithm: 'multi-pose',
@@ -245,6 +244,8 @@
             cameras: [],
             selected_camera: null,
             video: null,
+            videoWidth: 800,
+            videoHeight: 600,
         }),
         computed: {
             is_editing_detectline: function () {
@@ -292,8 +293,8 @@
                 //     flipHorizontal = true
                 // }
 
-                canvas.width = videoWidth;
-                canvas.height = videoHeight;
+                canvas.width = vm.videoWidth;
+                canvas.height = vm.videoHeight;
                 // canvas.width = '100%';
                 // canvas.height = '100%';
 
@@ -356,13 +357,13 @@
                             break;
                     }
 
-                    ctx.clearRect(0, 0, videoWidth, videoHeight);
+                    ctx.clearRect(0, 0, vm.videoWidth, vm.videoHeight);
 
                     if (guiState.output.showVideo) {
                         ctx.save();
                         // ctx.scale(-1, 1);
                         // ctx.translate(-videoWidth, 0);
-                        ctx.drawImage(video, 0, 0, videoWidth, videoHeight);
+                        ctx.drawImage(video, 0, 0, vm.videoWidth, vm.videoHeight);
                         ctx.restore();
                     }
 
@@ -491,26 +492,28 @@
                 }
 
                 const video = document.getElementById('video');
-                video.width = videoWidth;
-                video.height = videoHeight;
+                video.width = this.videoWidth;
+                video.height = this.videoHeight;
 
-                // let facing_mode
+                let video_options
                 const mobile = this.isMobile();
-                // if (mobile) {
-                //     facing_mode = { exact: "environment" }
-                // } else {
-                //     facing_mode = 'user'
-                // }
-
+                if (mobile) {
+                    video_options = {
+                        // facing_mode: this.selected_camera.label === 'Front' ? 'user' : { exact: "environment" },
+                        facingMode: { exact: "environment" },
+                        width: undefined,
+                        height: undefined,
+                    }
+                } else {
+                    video_options = {
+                        deviceId: deviceId,
+                        width: this.videoWidth,
+                        height: this.videoHeight,
+                    }
+                }
                 const stream = await navigator.mediaDevices.getUserMedia({
                     'audio': false,
-                    'video': {
-                        deviceId: deviceId,
-                        // facingMode: facing_mode,
-                        width: mobile ? undefined : videoWidth,
-                        height: mobile ? undefined : videoHeight,
-
-                    }
+                    'video': video_options
                 });
                 video.srcObject = stream;
 
@@ -548,26 +551,29 @@
 
             async onMounted() {
                 const vm = this
-                let i = 0
+
+                vm.videoWidth = window.innerWidth
+                vm.videoHeight = window.innerHeight
+
                 navigator.mediaDevices.enumerateDevices()
                     .then(function(devices) { // 成功時
+                        console.log(devices)
                         devices.forEach(function(device) {
-                            if(device.kind === "videoinput") {
+                                if(device.kind === "videoinput") {
                                 const info = {
                                     'deviceId': device.deviceId,
                                     'label': device.label,
                                 }
                                 vm.cameras.push(info)
-                                if(i === 0) {
-                                    vm.selected_camera = info
-                                }
-                                i++
+                                vm.selected_camera = info
                             }
                         });
                     })
                     .catch(function(err) { // エラー発生時
                         console.error('enumerateDevide ERROR:', err);
                     });
+
+
 
                 this.prev_detected.on = new Date().getTime()
                 this.last_reset = new Date().toLocaleString();
@@ -611,3 +617,6 @@
         }
     }
 </script>
+
+<style scoped>
+</style>

@@ -107,7 +107,7 @@
                                         <v-slider
                                                 v-model="p1.x"
                                                 min="0"
-                                                max="800"
+                                                :max="videoWidth"
                                                 label="p1_x"
                                         >
                                             <template v-slot:append>
@@ -126,7 +126,7 @@
                                         <v-slider
                                                 v-model="p1.y"
                                                 min="0"
-                                                max="600"
+                                                :max="videoHeight"
                                                 label="p1_y"
                                         >
                                             <template v-slot:append>
@@ -145,7 +145,7 @@
                                         <v-slider
                                                 v-model="p2.x"
                                                 min="0"
-                                                max="800"
+                                                :max="videoWidth"
                                                 label="p2_x"
                                         >
                                             <template v-slot:append>
@@ -164,7 +164,7 @@
                                         <v-slider
                                                 v-model="p2.y"
                                                 min="0"
-                                                max="600"
+                                                :max="videoHeight"
                                                 label="p2_y"
                                         >
                                             <template v-slot:append>
@@ -197,6 +197,7 @@
     import * as posenet from '@tensorflow-models/posenet';
     import Stats from 'stats.js';
     import Util from '@/services/utils';
+    import { useWindowSize } from '@vueuse/core'
 
 
     const stats = new Stats();
@@ -229,8 +230,8 @@
         data: () => ({
             is_rear_camera: true,
             people_count: 0,
-            p1: {"x": 0, "y": 300},
-            p2: {"x": 800, "y": 300},
+            p1: {"x": 400, "y": 0},
+            p2: {"x": 400, "y": 600},
             thresh: 10,
             last_reset: '',
             prev_detected: {"x": -1, 'y': -1, 'on': null},
@@ -244,8 +245,8 @@
             cameras: [],
             selected_camera: null,
             video: null,
-            videoWidth: 800,
-            videoHeight: 600,
+            // videoWidth: 800,
+            // videoHeight: 600,
         }),
         computed: {
             is_editing_detectline: function () {
@@ -254,6 +255,10 @@
         },
         mounted() {
             this.onMounted();
+        },
+        setup() {
+            const { width, height } = useWindowSize()
+            return { videoWidth: width, videoHeight: height }
         },
         methods: {
             startCount: async function() {
@@ -552,8 +557,11 @@
             async onMounted() {
                 const vm = this
 
-                vm.videoWidth = window.innerWidth
-                vm.videoHeight = window.innerHeight
+                // vm.videoWidth = window.innerWidth
+                // vm.videoHeight = window.innerHeight
+                vm.p1.x = Math.floor(vm.videoWidth / 2)
+                vm.p2.x = Math.floor(vm.videoWidth / 2)
+                vm.p2.y = Math.floor(vm.videoHeight)
 
                 navigator.mediaDevices.enumerateDevices()
                     .then(function(devices) { // 成功時

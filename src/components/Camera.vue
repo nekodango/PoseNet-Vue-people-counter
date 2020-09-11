@@ -9,12 +9,13 @@
                         Loading the model...
                     </div>
 
-                    <div id='main' style='display:none'>
-                        <video id="video" playsinline style="display: none;">
-                        </video>
-                        <canvas id="output" height="30%" width="30%" />
-                    </div>
-
+                    <v-card>
+                      <div id='main' style='display:none'>
+                          <video id="video" playsinline style="display: none;">
+                          </video>
+                          <canvas id="output" />
+                      </div>
+                    </v-card>
                 </v-col>
                 <v-col>
                     <v-card

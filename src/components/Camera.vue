@@ -494,19 +494,19 @@
                 video.width = videoWidth;
                 video.height = videoHeight;
 
-                // let facing_mode
+                let facing_mode
                 const mobile = this.isMobile();
-                // if (mobile) {
-                //     facing_mode = { exact: "environment" }
-                // } else {
-                //     facing_mode = 'user'
-                // }
+                if (mobile) {
+                    facing_mode = { exact: "environment" }
+                } else {
+                    facing_mode = 'user'
+                }
 
                 const stream = await navigator.mediaDevices.getUserMedia({
                     'audio': false,
                     'video': {
                         deviceId: deviceId,
-                        // facingMode: facing_mode,
+                        facingMode: facing_mode,
                         width: mobile ? undefined : videoWidth,
                         height: mobile ? undefined : videoHeight,
 

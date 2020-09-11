@@ -9,7 +9,7 @@
                         Loading the model...
                     </div>
 
-                    <v-card>
+                    <v-card width="100%">
                       <div id='main' style='display:none'>
                           <video id="video" playsinline style="display: none;">
                           </video>

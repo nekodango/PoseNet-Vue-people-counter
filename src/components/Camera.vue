@@ -12,7 +12,7 @@
                     <div id='main' style='display:none'>
                         <video id="video" playsinline style="display: none;">
                         </video>
-                        <canvas id="output" />
+                        <canvas id="output" height="30%" width="30%" />
                     </div>
 
                 </v-col>

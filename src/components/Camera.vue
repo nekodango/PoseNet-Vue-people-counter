@@ -16,7 +16,7 @@
                     </div>
 
                 </v-col>
-                <v-col cols="4">
+                <v-col>
                     <v-card
                             class="mx-auto"
                             outlined

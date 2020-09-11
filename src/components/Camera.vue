@@ -2,7 +2,7 @@
     <div>
         <v-container fluid>
             <v-row dense>
-                <v-col cols="8">
+                <v-col>
                     <div id="info" style='display:none'>
                     </div>
                     <div id="loading">

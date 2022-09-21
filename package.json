@@ -15,7 +15,7 @@
     "dat.gui": "^0.7.7",
     "stats.js": "^0.17.0",
     "vue": "^2.6.11",
-    "vuetify": "^2.2.11",
+    "vuetify": "^2.6.10",
     "serialize-javascript": ">=3.1.0"
   },
   "devDependencies": {
